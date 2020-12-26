@@ -18,21 +18,28 @@ class PayoffMatrix:
     def get_payoff_for_actions_list(self, actions_list):
         """
         Method to get the typical payoff out of the matrix
-        :param actions_list: The list of action taken by all (2) players. Example : ['C', 'D']
+        :param actions_list: The list of action taken by all (2) players. Example : ['C', 'D'] is equal to [0,1]
         :return: a numpy float 64
         """
-        return self.matrix[actions_list_to_index(actions_list)]
+        if isinstance(actions_list[0], str) and isinstance(actions_list[1], str):
+            return self.matrix[actions_list_to_index(actions_list)]
+        else:
+            return self.matrix[actions_list]
 
-    def get_stimulus_for_actions_list(self, actions_list, aspiration_level):
+    def get_stimulus_for_actions_list(self, actions_list, aspiration_level, agent_index):
         """
         Method to get the stimulus out of the matrix
         :param actions_list: The list of action taken by all (2) players. Example : ['C', 'D']
         :param aspiration_level: the aspiration level of the agent
         :return: a numpy float 64 (can be negative too !)
         """
-        payoff = self.get_payoff_for_actions_list(actions_list)
+        payoff = self.get_payoff_for_actions_list(actions_list)[agent_index]
         den = max([value-aspiration_level for value in self.matrix_values.values()])
         return (payoff-aspiration_level)/den
+
+    def get_stimulus_for_payoff(self, payoff, aspiration_level):
+        den = max([value - aspiration_level for value in self.matrix_values.values()])
+        return (payoff - aspiration_level) / den
 
     def __str__(self):
         res = '\n'
@@ -45,6 +52,8 @@ class PayoffMatrix:
         res += ' |' + str(self.matrix[1, 0, 0]).ljust(10) + "|" + str(self.matrix[1, 1, 0]).ljust(10) + '|\n'
         res += "-----------------------\n"
         return res
+
+
 
 
 if __name__ == '__main__':

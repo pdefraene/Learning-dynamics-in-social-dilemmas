@@ -2,13 +2,17 @@ import numpy as np
 
 
 # Action set = {C,D}
+from DecisionModule import DecisionModule
+
 
 class Agent:
-    def __init__(self, nb_actions=2, learning_rate=1, aspiration_level=None, habituation=None):  # TODO : find what value to start with for aspitation amd habituation
+    def __init__(self, decision_heuristic='BM', nb_actions=2, learning_rate=1, aspiration_level=None, habituation=None):  # TODO : find what value to start with for aspitation amd habituation
         self.probabilities = np.empty(nb_actions, dtype=np.float64)
         self.learning_rate = learning_rate
         self.aspiration_level = aspiration_level
         self.habituation = habituation
+
+        self.decision_maker = DecisionModule(decision_heuristic)
 
     def update_probabilities(self, stimulus, action):
         p = self.probabilities[action]
@@ -29,3 +33,6 @@ class Agent:
         A = (1-h)*A + h*payoff
         self.aspiration_level = A
         return A
+
+    def choose_action(self):
+        return self.decision_maker.choose()

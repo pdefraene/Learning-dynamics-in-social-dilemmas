@@ -1,3 +1,5 @@
+import math
+
 import numpy as np
 
 
@@ -34,11 +36,11 @@ class PayoffMatrix:
         :return: a numpy float 64 (can be negative too !)
         """
         payoff = self.get_payoff_for_actions_list(actions_list)[agent_index]
-        den = max([value-aspiration_level for value in self.matrix_values.values()])
+        den = math.ceil(max([value-aspiration_level for value in self.matrix_values.values()]))
         return (payoff-aspiration_level)/den
 
     def get_stimulus_for_payoff(self, payoff, aspiration_level):
-        den = max([value - aspiration_level for value in self.matrix_values.values()])
+        den = math.ceil(max([value - aspiration_level for value in self.matrix_values.values()]))
         return (payoff - aspiration_level) / den
 
     def __str__(self):

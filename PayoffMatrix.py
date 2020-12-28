@@ -8,7 +8,7 @@ def actions_list_to_index(actions_list):
 
 
 class PayoffMatrix:
-    def __init__(self, r_value, s_value, t_value, p_value, **kwargs):
+    def __init__(self, p_value, r_value, s_value, t_value, **kwargs):
         self.matrix = np.empty(shape=(2, 2, 2), dtype=np.float)
         self.matrix_values = {"R": r_value, "S": s_value, "T": t_value, "P": p_value}
         self.matrix[0, 0, 0] = self.matrix[0, 0, 1] = r_value
@@ -17,31 +17,16 @@ class PayoffMatrix:
         self.matrix[0, 1, 0] = self.matrix[1, 0, 1] = s_value
         self.matrix[0, 1, 1] = self.matrix[1, 0, 0] = t_value
 
+    def __len__(self):
+        return self.matrix.__len__()
+
     def get_payoff_for_actions_list(self, actions_list):
         """
         Method to get the typical payoff out of the matrix
-        :param actions_list: The list of action taken by all (2) players. Example : ['C', 'D'] is equal to [0,1]
+        :param actions_list: The list of action taken by all (2) players. Example : [0,1] outputs -10
         :return: a numpy float 64
         """
-        if isinstance(actions_list[0], str) and isinstance(actions_list[1], str):
-            return self.matrix[actions_list_to_index(actions_list)]
-        else:
-            return self.matrix[actions_list]
-
-    def get_stimulus_for_actions_list(self, actions_list, aspiration_level, agent_index):
-        """
-        Method to get the stimulus out of the matrix
-        :param actions_list: The list of action taken by all (2) players. Example : ['C', 'D']
-        :param aspiration_level: the aspiration level of the agent
-        :return: a numpy float 64 (can be negative too !)
-        """
-        payoff = self.get_payoff_for_actions_list(actions_list)[agent_index]
-        den = math.ceil(max([value-aspiration_level for value in self.matrix_values.values()]))
-        return (payoff-aspiration_level)/den
-
-    def get_stimulus_for_payoff(self, payoff, aspiration_level):
-        den = math.ceil(max([value - aspiration_level for value in self.matrix_values.values()]))
-        return (payoff - aspiration_level) / den
+        return self.matrix[actions_list]
 
     def __str__(self):
         res = '\n'
@@ -55,7 +40,9 @@ class PayoffMatrix:
         res += "-----------------------\n"
         return res
 
-
+    def get_supremum(self, A):
+        T, R, P, S = self.matrix_values["T"], self.matrix_values["R"], self.matrix_values["P"], self.matrix_values["S"]
+        return math.ceil(max(abs(T-A),abs(R-A),abs(P-A),abs(S-A),))
 
 
 if __name__ == '__main__':

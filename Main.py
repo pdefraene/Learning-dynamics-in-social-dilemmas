@@ -37,11 +37,12 @@ if __name__ == '__main__':
     habituation = 0
     p_fill = 0.5
 
-    Prisoners_Dilemma_values = [[1, 3, 0, 4], 2]
-    Chicken_Game_values = [[0, 3, 1, 4], 2]
-    Stag_Hunt_values = [[1, 4, 0, 3], 2]
+    A0 = 2
+    Prisoners_Dilemma_values = [[1, 3, 0, 4], A0]
+    Chicken_Game_values = [[0, 3, 1, 4], A0]
+    Stag_Hunt_values = [[1, 4, 0, 3], A0]
 
-    game = Prisoners_Dilemma_values
+    game = Chicken_Game_values
 
     aspiration_level = game[1]
 
@@ -57,7 +58,7 @@ if __name__ == '__main__':
     probabilities_historic = np.empty((nb_rep, nb_ep, nb_agents, nb_actions), dtype=np.float64)
 
     for rep in range(nb_rep):
-        print(f"Calculating {rep}/{nb_rep}")
+        print(f"Calculating {rep}/{nb_rep}", end="\r")
         for t in range(nb_ep):
             choices_main = ask_agents(agents_main)
             payoffs_main = payoff_matrix_main.get_payoff_for_actions_list(choices_main)

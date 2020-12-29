@@ -1,5 +1,8 @@
 import numpy as np
+import sys
 import matplotlib.pyplot as plt
+np.set_printoptions(threshold=sys.maxsize)
+plt.rc("font", **{"size" : 20})
 
 
 def plot_probabilities_historic_average(historic, nb_rep, values, aspiration_level, l, h, p, game):
@@ -8,15 +11,15 @@ def plot_probabilities_historic_average(historic, nb_rep, values, aspiration_lev
     Stag_Hunt_values = [[1, 4, 0, 3], 2]
 
     title = ""
-    if nb_rep != 1:
-        title = f"Average over {nb_rep} of "
-    if game == Prisoners_Dilemma_values:
-        title += f"Prisoner's Dilemma with\nT={values['T']} > R={values['R']} > A0={aspiration_level} > P={values['P']} > S={values['S']}"
-    elif game == Chicken_Game_values:
-        title += f"Chicken Game with\nT={values['T']} > R={values['R']} > A0={aspiration_level} > S={values['S']} > P={values['P']}"
-    elif game == Stag_Hunt_values:
-        title += f"Stag Hunt with\nR={values['R']} > T={values['T']} > A0={aspiration_level} > P={values['P']} > S={values['S']}"
-    title += f"\nl={l}, h={h}, pC0={p}"
+    #if nb_rep != 1:
+    #    title = f"Average over {nb_rep} of "
+    #if game == Prisoners_Dilemma_values:
+    #    title += f"Prisoner's Dilemma with\nT={values['T']} > R={values['R']} > A0={aspiration_level} > P={values['P']} > S={values['S']}"
+    #elif game == Chicken_Game_values:
+    #    title += f"Chicken Game with\nT={values['T']} > R={values['R']} > A0={aspiration_level} > S={values['S']} > P={values['P']}"
+    #elif game == Stag_Hunt_values:
+    #    title += f"Stag Hunt with\nR={values['R']} > T={values['T']} > A0={aspiration_level} > P={values['P']} > S={values['S']}"
+    #title += f"\nl={l}, h={h}, pC0={p}"
     historic = np.mean(historic, axis=0)
 
     first_agent_first_proba = np.empty(len(historic), dtype=np.float64)
@@ -28,6 +31,15 @@ def plot_probabilities_historic_average(historic, nb_rep, values, aspiration_lev
     ax.plot(first_agent_first_proba)
     ax.set_ylim(ymin=0, ymax=1)
     ax.spines["top"].set_visible(False)
+    plt.ylabel("Cooperation rate")
+    plt.xlabel("iteration")
 
     plt.title(title)
+    plt.show()
+
+def plot_SRE_over_A(data):
+    x = np.linspace(0, 4, 40)
+    for game in range(len(data)):
+        plt.subplot(3, 1, game+1)
+        plt.plot(x, data[game])
     plt.show()

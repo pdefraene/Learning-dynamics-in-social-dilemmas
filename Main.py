@@ -2,7 +2,7 @@ import numpy as np
 
 from Agent import Agent
 from PayoffMatrix import PayoffMatrix
-from Plots import plot_probabilities_historic_average
+from Plots import plot_probabilities_historic_average, plot_SRE_over_A
 
 
 def ask_agents(agents):
@@ -30,7 +30,7 @@ def update_agents_aspiration(agents, payoffs):
     return [ag.update_aspiration(payoffs[i]) for i, ag in enumerate(agents)]
 
 
-if __name__ == '__main__':
+def plot1():
     decision_heuristic = "BM"
     learning_rate = 0.5
 
@@ -52,7 +52,7 @@ if __name__ == '__main__':
                          habituation, p_fill) for _ in range(nb_agents)]
     payoff_matrix_main = PayoffMatrix(*game[0])
 
-    nb_rep = 1
+    nb_rep = 30
     nb_ep = 100
 
     probabilities_historic = np.empty((nb_rep, nb_ep, nb_agents, nb_actions), dtype=np.float64)
@@ -71,3 +71,42 @@ if __name__ == '__main__':
 
     plot_probabilities_historic_average(probabilities_historic, nb_rep, payoff_matrix_main.matrix_values,
                                         aspiration_level, learning_rate, habituation, p_fill, game)
+
+
+def plot2():
+    decision_heuristic = "BM"
+    learning_rate = 0.5
+    habituation = 0
+    p_fill = 0.5
+    nb_agents = 2
+    nb_actions = 2
+    nb_rep = 250  # 50
+    nb_ep = 1000  # 1000
+    prisoners_dilemma = [1, 3, 0, 4]  # [p, r, s, t]
+    chicken_game = [0, 3, 1, 4]
+    stag_hunt = [1, 4, 0, 3]
+
+    SRE_probabilities = np.empty((3, 40), dtype=np.float64)  #, nb_rep, nb_ep, nb_agents, nb_actions)
+
+    for nbr_g, game in enumerate([prisoners_dilemma, chicken_game, stag_hunt]):
+        payoff_matrix_main = PayoffMatrix(*game)
+        for A0 in range(40):
+            agents_main = [Agent(decision_heuristic, learning_rate, A0/10, habituation, p_fill) for _ in range(nb_agents)]
+            for rep in range(nb_rep):
+                print(f"Calculating {rep}/{nb_rep} for A {A0/10} and game {nbr_g}  ", end="\r")
+                for _ in range(nb_ep):
+                    choices_main = ask_agents(agents_main)
+                    payoffs_main = payoff_matrix_main.get_payoff_for_actions_list(choices_main)
+                    supremi_main = get_supremi(agents_main, payoff_matrix_main)
+                    stimuli_main = compute_stimuli(agents_main, payoffs_main, supremi_main)
+                    new_proba_main = update_agents_probabilities(agents_main, stimuli_main, choices_main)
+                    new_aspi_main = update_agents_aspiration(agents_main, payoffs_main)
+                    #if new_proba_main[0][0] >= 0.999:
+                    #    SRE_probabilities[nbr_g, A0] += 1
+                    SRE_probabilities[nbr_g, A0] += new_proba_main[0][0]
+    SRE_probabilities /= (nb_rep*nb_ep)
+    plot_SRE_over_A(SRE_probabilities)
+
+
+if __name__ == '__main__':
+    plot2()

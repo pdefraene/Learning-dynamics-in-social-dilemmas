@@ -38,8 +38,23 @@ def plot_probabilities_historic_average(historic, nb_rep, values, aspiration_lev
     plt.show()
 
 def plot_SRE_over_A(data):
+    games_names = ["prisoners dilemma", "chicken", "stag hunt"]
     x = np.linspace(0, 4, 40)
     for game in range(len(data)):
         plt.subplot(3, 1, game+1)
-        plt.plot(x, data[game])
+        plt.ylim(0, 1.1)
+        plt.plot(x, data[game][0])
+        plt.title(games_names[game]+" game")
+    plt.show()
+
+    for game in range(len(data)):
+        plt.subplot(3, 1, game+1)
+        plt.ylim(0, 1.1)
+        plt.plot(x, data[game][0], color='black', linestyle='dashed', label='classic', alpha=0.6)
+        if game != 2:
+            plt.plot(x, data[game][1], color='red', label='greed', alpha=0.6)
+        if game != 1:
+            plt.plot(x, data[game][2], color='blue', label='fear', alpha=0.6)
+        plt.title(games_names[game]+" game")
+        plt.legend()
     plt.show()

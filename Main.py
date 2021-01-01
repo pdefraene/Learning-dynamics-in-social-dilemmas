@@ -104,5 +104,34 @@ def plot2():
     plot_SRE_over_A(SRE_probabilities)
 
 
+def print_val_for_pierre():
+    decision_heuristic = "BM"
+    learning_rate = 0.5
+    p_fill = 0.5
+    nb_agents = 2
+    prisoners_dilemma = [1, 3, 0, 4]
+    chicken_game = [0, 3, 1, 4]
+    stag_hunt = [1, 4, 0, 3]
+    nb_rep = 1000  # 1000
+    nb_ep = 500  # 500
+    for game in [prisoners_dilemma, chicken_game, stag_hunt]:
+        for A0 in [0.5, 2, 3.5]:
+            payoff_matrix_main = PayoffMatrix(*game)
+            for habituation in [0, 0.2]:
+                res = 0
+                for _ in range(nb_rep):
+                    agents_main = [Agent(decision_heuristic, learning_rate, A0, habituation, p_fill) for _ in
+                                   range(nb_agents)]
+                    for _ in range(nb_ep):
+                        choices_main = ask_agents(agents_main)
+                        payoffs_main = payoff_matrix_main.get_payoff_for_actions_list(choices_main)
+                        supremi_main = get_supremi(agents_main, payoff_matrix_main)
+                        stimuli_main = compute_stimuli(agents_main, payoffs_main, supremi_main)
+                        new_proba_main = update_agents_probabilities(agents_main, stimuli_main, choices_main)
+                        new_aspi_main = update_agents_aspiration(agents_main, payoffs_main)
+                    res += new_proba_main[0][0]
+                print(f"game={game} A={A0} h={habituation} => {res/nb_rep}")
+
+
 if __name__ == '__main__':
-    plot2()
+    print_val_for_pierre()

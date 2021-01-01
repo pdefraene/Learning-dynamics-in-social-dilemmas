@@ -24,12 +24,12 @@ def plot_SRE_over_A(data):
     for game in range(len(data)):
         plt.subplot(3, 1, game+1)
         plt.ylim(0, 1.1)
-        plt.plot(x, data[game][0])
         plt.title(games_names[game]+" game")
-        plt.ylabel("SRE rate")
+        if game == 1:
+            plt.ylabel("SRE rate")
         if game == 2:
             plt.xlabel("A0")
-        plt.plot(historic[game])
+        plt.plot(x, data[game][0])
     plt.show()
 
     for game in range(len(data)):
@@ -37,9 +37,13 @@ def plot_SRE_over_A(data):
         plt.ylim(0, 1.1)
         plt.plot(x, data[game][0], color='black', linestyle='dashed', label='classic', alpha=0.6)
         if game != 1:
-            plt.plot(x, data[game][1], color='red', label='greed', alpha=0.6)
+            plt.plot(x, data[game][1], color='blue', label='fear', alpha=0.6)
         if game != 2:
-            plt.plot(x, data[game][2], color='blue', label='fear', alpha=0.6)
+            plt.plot(x, data[game][2], color='red', label='greed', alpha=0.6)
         plt.title(games_names[game]+" game")
+        if game == 1:
+            plt.ylabel("SRE rate")
+        if game == 2:
+            plt.xlabel("A0")
         plt.legend()
     plt.show()
